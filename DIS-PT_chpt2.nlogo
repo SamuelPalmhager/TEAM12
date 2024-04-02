@@ -99,11 +99,16 @@ citizens-own [
   inPrison?
   jailtime
   jailsentence
+  state
+
 ]
 ;---- Specific, local variables of cop-agents
 cops-own [
   ;cop-vision is set by slider
   cop-speed
+  hunger
+  time_eating
+
 ]
 
 
@@ -133,6 +138,14 @@ to setup
     ]
     ask one-of prisonpatches [set plabel "PRISON"]
 
+  ;setup restarant
+  let restaurantpatches patches with [pxcor >= 40 and pxcor <= 50 and pycor >= 5 and pycor <= 15]
+     ask restaurantpatches [
+       set pcolor yellow
+       set region "restaurant"
+     ]
+   ask one-of restaurantpatches [set plabel "Chinese Food"]
+
 
   ; setup citizen-agents
   create-citizens num-citizens [
@@ -142,7 +155,7 @@ to setup
     set color green
     setxy random-xcor random-ycor
     ; make sure the agents are not placed in prison already during setup:
-    move-to one-of patches with [ not any? turtles-here and region != "prison"]
+    move-to one-of patches with [ not any? turtles-here and region != "prison" and region != "restaurant"]
     ; setting specific variables for citizen
     set inPrison? false
     set jailtime 0
@@ -154,10 +167,11 @@ to setup
   create-cops num-cops [
     set label who
     set shape "person police"
-    set size 2
+    set size 1.5
     set color blue
-    set cop-speed random 3 + 1 ; make sure it cannot be 0
-    move-to one-of patches with [ not any? turtles-here and region != "prison"]
+    set hunger random 100 + 1
+    set cop-speed random 5 + 1 ; make sure it cannot be 0
+    move-to one-of patches with [not any? turtles-here and region != "prison" and region != "restaurant"]
   ]
 
 
@@ -190,7 +204,7 @@ to go
   ask turtles [
     ; Reactive part based on the type of agent
     if (breed = citizens) [
-      citizen_behavior ; code as defined in the include-file "citizens.nls"
+      citizen_behaviour ; code as defined in the include-file "citizens.nls"
       ]
     if (breed = cops) [
       cop_behavior ; code as defined in the include-file "cops.nls"
@@ -241,7 +255,7 @@ num-citizens
 num-citizens
 1
 30
-19.0
+30.0
 1
 1
 NIL
@@ -290,7 +304,7 @@ num-cops
 num-cops
 0
 50
-4.0
+1.0
 1
 1
 NIL
@@ -305,7 +319,7 @@ citizen-vision
 citizen-vision
 1
 10
-3.0
+0.0
 0.1
 1
 NIL
@@ -320,7 +334,7 @@ cop-vision
 cop-vision
 1
 10
-3.0
+10.0
 0.1
 1
 NIL
