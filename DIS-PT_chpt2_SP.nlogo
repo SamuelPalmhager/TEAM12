@@ -204,13 +204,13 @@ to go
   ask turtles [
     ; Reactive part based on the type of agent
     if (breed = citizens) [
-      citizen_behavior ; code as defined in the include-file "citizens.nls"
+      citizen_behaviour ; code as defined in the include-file "citizens.nls"
       ]
     if (breed = cops) [
       cop_behavior ; code as defined in the include-file "cops.nls"
       ]
   ]
-;HEJHEJ
+
   ;recorder
  if vid:recorder-status = "recording" [
     if Source = "Only View" [vid:record-view] ; records the plane
@@ -319,7 +319,7 @@ citizen-vision
 citizen-vision
 1
 10
-0.0
+1.0
 0.1
 1
 NIL
