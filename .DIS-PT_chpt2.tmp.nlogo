@@ -196,7 +196,7 @@ to go
   ;---- Basic functions, like setting the time
   ;
   tick ;- update time
-
+citizen_behavior
 
   ;---- Agents to-go part -------------
   ; Cyclic execution of what the agents are supposed to do
@@ -204,7 +204,7 @@ to go
   ask turtles [
     ; Reactive part based on the type of agent
     if (breed = citizens) [
-      citizen_behavior ; code as defined in the include-file "citizens.nls"
+      citizen_behaviour ; code as defined in the include-file "citizens.nls"
       ]
     if (breed = cops) [
       cop_behavior ; code as defined in the include-file "cops.nls"
