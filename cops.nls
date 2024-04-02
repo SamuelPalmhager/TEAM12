@@ -1,0 +1,61 @@
+; File with the "to-go"- functionality of cops-agents
+
+; FILE HISTORY:
+
+; 2022-04-10 Initial template, gks
+; 
+;
+;
+;
+;---------------------------------------------------
+
+to cop_behavior
+  
+  ;---- Hungry cops -------
+  
+  set hunger hunger - 1
+  
+  ;------- i restaurang -------
+  if time_eating > 0 [
+    set time_eating time_eating - 1
+    if time_eating = 0 [
+      print (word "cop-agent: " who  "is done eating and ready to catch criminals again" )
+      set hunger random 100
+      set time_eating 0
+    ]
+  ]
+  
+  
+  if hunger = 0 [
+    let restaurant one-of patches with [region = "restaurant"]
+    move-to one-of patches with [not any? turtles-here and region = "restaurant"]
+    ;face restaurant 
+    
+    ;if patch-here = restaurant [
+      print (word "cop-agent: " who  "is eating chinese food" )
+      set time_eating 50
+    ;]
+    
+  ] 
+  
+  
+  ; check if citizen is nearby to arrest
+  let suspect one-of citizens-here with [inPrison? = false] ; need to make sure the citizen is not in jail, otherwise can the cop be trapped besides
+    ifelse suspect != nobody [
+        ; move the citizen to prison and mark them as arrested
+        print (word " cop-agent: " who " puts suspect: " suspect " to prison!")
+        ask suspect [
+           set jailsentence random max-jailterm
+           gotoprison
+        ]
+    ]
+    [; else look for citizens and move towards them
+     set suspect one-of other citizens with [inPrison? = false] in-radius cop-vision
+     if suspect != nobody [
+        print (word " cop-agent: " who " sees suspect: " suspect)
+        face suspect  
+    ]
+    forward cop-speed ; move forward towards suspect
+  ]
+end
+
