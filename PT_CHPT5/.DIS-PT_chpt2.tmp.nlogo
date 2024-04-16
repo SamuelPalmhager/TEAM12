@@ -747,7 +747,7 @@ SWITCH
 219
 show-intentions
 show-intentions
-1
+0
 1
 -1000
 
