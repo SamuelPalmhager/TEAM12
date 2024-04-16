@@ -1,3 +1,9 @@
+
+to citizen_intention_behaviour
+  execute-intentions
+end 
+
+
 to citizen_behaviour
   
   set state 0
@@ -37,10 +43,10 @@ to citizen_behaviour
 end 
  
 ; if asked to go to prison  
-to gotoprison 
-  ; set flag
-  set inPrison? true
-  set color red
-  ; move to prison into an own cell (=own patch)
-  move-to one-of patches with [not any? turtles-here and region = "prison"]
-end
+;to gotoprison 
+;  ; set flag
+;  set inPrison? true
+;  set color red
+;  ; move to prison into an own cell (=own patch)
+;  move-to one-of patches with [not any? turtles-here and region = "prison"]
+;end

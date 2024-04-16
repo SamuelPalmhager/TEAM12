@@ -86,6 +86,11 @@ end
 
 to execute-intentions
 ;;;locals [myInt]  ;; first intentions
+  let workpatch patches with [region = "work"]
+  let nearby-police other cops in-radius citizen-vision
+  let homepatch patches with [region = "home"]
+  let prisonpatch patches with [region = "prison"]
+  
   if empty? intentions [stop]
   let myInt get-intention
   if show-intentions [set label myInt] ;; Just for debugging. 
