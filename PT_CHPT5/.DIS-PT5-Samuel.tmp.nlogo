@@ -1,5 +1,3 @@
-
-
 __includes [
     "citizens.nls"
     "cops.nls"
@@ -157,7 +155,7 @@ to setup
 
 
   ; must be last in the setup-part:
-  reset-ticks
+
   ;recorder
   if vid:recorder-status = "recording" [
     if Source = "Only View" [vid:record-view] ; records the plane
@@ -329,7 +327,6 @@ to record
   ]
 
 end ; - to go part
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 549

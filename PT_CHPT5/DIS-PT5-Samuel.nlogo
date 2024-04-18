@@ -1,4 +1,3 @@
-
 __includes [
     "citizens.nls"
     "cops.nls"
@@ -328,7 +327,6 @@ to record
   ]
 
 end ; - to go part
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 549
