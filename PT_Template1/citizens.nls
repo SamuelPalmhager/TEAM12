@@ -42,6 +42,10 @@ citizens-own [
   proState ;----------State variable for the proactive states. Enumeration = Study, 
                       ;Work, Unemployed, ’Walking around’, ’Meeting friends’, ’Go out’, Political, Resignation, Demonstration
                       ;Pursue of Happiness Goals
+  studycoffeterm ;----------time of drinking coffe or studying
+  studyterm ;----------time of studying
+  waitterm
+  
   vWalk ;-------------Value for Walk-desire [0..1]
   minWalk ;-----------Min-value for Walk-desire after fulfillment of desire
   thrWalk ;-----------Threshold for Walk-desire
@@ -86,6 +90,7 @@ to setup-citizens
     set incoming-queue []
     set destinationxy []
     set walkdesire? false
+    set waitterm 12
     set counter 0 ; all-purpose counter
   ]
 
@@ -99,8 +104,8 @@ to citizen_behavior
 ;---- cops nearby, which one is the nearest? How many cops, how many citizens?
 let nearby-police other cops in-radius citizen-vision
 if any? nearby-police [let police min-one-of nearby-police [distance myself]]; identify the cop that is nearest  
-set A count nearby-police
-set C count (other citizens in-radius citizen-vision)
+set A count nearby-police ;How many nearby police-officers
+set C count (other citizens in-radius citizen-vision) ;How many nearby citizens
 ; ---- identify a path to escape to if needed
 let hidingplaces neighborhood with [not any? cops-here and region = "empty" or region = "TownSquare"]
 ;--- save local position
@@ -121,8 +126,8 @@ set localxy patch-here
     inPrison? [bidePrisonTime]
     ;(A > 1) and (any? nearby-police) [hideFromCops nearby-police hidingplaces]
     any? nearby-police [hideFromCops nearby-police hidingplaces]
-    destinationxy != [] [moveToDestxy]
-    ;(destinationxy != []) and (destinationxy != localxy) [moveToDestxy]
+    ;destinationxy != [] [moveToDestxy]
+    (destinationxy != []) and (destinationxy != localxy) [moveToDestxy]
     walkdesire? [moveAround]
     [proactiveBehavior] ; this function always at the end by itself
   )
@@ -148,6 +153,7 @@ end
 
 ; if in prison, bide your sentence-time
 to bidePrisonTime
+  print("Gick in i bidePrisonTime")
   set jailterm jailterm + 1 ;counting the time in prison
   if Debug [print (word "citizen " who "is in prison since: " jailterm)]
   if jailterm > jailsentence [; released from prison
@@ -163,6 +169,7 @@ to bidePrisonTime
 end
 
 to hideFromCops [nearby-police hidingplaces]
+  print("Gick in i hideFromCops")
   let police min-one-of nearby-police [distance myself]
   if Debug [print (word " citizen: " who " hiding from cop: " police)]
   
@@ -184,12 +191,14 @@ to moveAround
 end
 
 to moveToDestxy
-  ifelse localxy != destinationxy [
+  ;print("Gick in i moveToDestxy")
+  if localxy != destinationxy [
         face destinationxy
         fd 1
         if Debug [print (word who " in moveToDestxy")]
   ] 
-  [ let reg []
+  if localxy = destinationxy[ let reg []
+    set localxy destinationxy
     ask patch-here [set reg region]
     if Debug [print (word who " arrived at destination: " reg)]]
 end
@@ -207,7 +216,7 @@ to proactiveBehavior
   
   
   ; For testing purposes
-  let StateList (list "Study" "Work" "Unemployed" "WalkingAround" "MeetingFriends" "Go_out" "Political" "Demonstration")
+  ;let StateList (list "Study" "DrinkingCoffe" "Work" "Unemployed" "WalkingAround" "MeetingFriends" "Go_out" "Political" "Demonstration")
   
   
   
@@ -217,13 +226,17 @@ to proactiveBehavior
   ;
   
   ; For testing
-  set proState item (random 8) StateList
+  ;set proState item (random 8) StateList 
+  ;print("Gick in i proactivebehaviour")
+  delibstate
   if Debug [print (word who "deliberated proState = " proState)]
   
   
   ; "Finite State Machine" 
   (ifelse
     proState = "Study" [study]
+    proState = "drinkingCoffe" [drinkespresso]
+    
     proState = "Work" [work]
     proState = "Unemployed" [unemployed]
     proState = "WalkingAround" [set walkdesire? true]
@@ -241,12 +254,65 @@ end
 ;"""""""""""""""""""" State functions """"""""""""""""""""""""""""""""""""""""""""""
 
 to study
+
   if Debug [print (word who " is in the proactive state Study")]
-  set destinationxy one-of patches with [region = "University"]
-  if localxy = destinationxy [set counter counter + 1]
-  if counter > 3 [set destinationxy homeLoc]
+  ;print(word "Citizen " who " will study")
+
+  ;print(word "Citizen " who word " has current location " localxy word " and destination: " destinationxy)
+  if localxy = destinationxy and studycoffeterm != 0[
+    set studycoffeterm studycoffeterm - 1
+    print(word "Citizen " who "pluggar DIS")
+  ]
+  if studycoffeterm = 0 and localxy != homeLoc [
+    
+    set destinationxy homeLoc
   
+  ] ;Ska hem
+  
+  if localxy = homeLoc and studycoffeterm = 0 and waitterm > 0[ ;Vänta i två timmar sen plugga mellan 1-2 timmar
+    
+    set waitterm waitterm - 1
+    
+    ]
+  if waitterm = 0[ ;Vänta i två timmar sen plugga mellan 1-2 timmar
+    set studyterm studyterm - 1
+      if studyterm = 0[
+      set destinationxy locTownSquare
+      set proState "WalkingAround"
+    ]
+    ]
+
 end
+
+
+to drinkespresso
+    if Debug [print (word who " is in the proactive state Study")]
+  ;print(word "Citizen " who " will study")
+
+  ;print(word "Citizen " who word " has current location " localxy word " and destination: " destinationxy)
+  if localxy = destinationxy and studycoffeterm != 0[
+    set studycoffeterm studycoffeterm - 1
+    print(word "Citizen " who "drinks coffe")
+  ]
+  if studycoffeterm = 0 and localxy != homeLoc [
+    
+    set destinationxy homeLoc
+  
+  ] ;Ska hem
+  
+  if localxy = homeLoc and studycoffeterm = 0 and waitterm > 0[ ;Vänta i två timmar sen plugga mellan 1-2 timmar
+    
+    set waitterm waitterm - 1
+    
+    ]
+  if waitterm = 0[ ;Vänta i två timmar sen plugga mellan 1-2 timmar
+    set studyterm studyterm - 1
+      if studyterm = 0[
+      set destinationxy locTownSquare
+      set proState "WalkingAround"
+    ]
+    ]
+end 
 
 to work
   if Debug [print (word who " is in the proactive state Work")]
@@ -275,3 +341,28 @@ to demonstrate
 end
 
 ;""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+to delibstate
+  if patch-here = homeLoc and flagMorning = true and time = 240 ;or time = 120 or 
+    ;time = 216 or time = 312 or time = 408 or time = 504 or time = 600 [ ;Kollar ifall man är hemma, det är morgon och klockan är 10 varje dag
+  [
+    ;print(word "citizen" who " singlar slant")
+    let coin random 2
+
+    if coin = 0[ ;Study case
+      set studycoffeterm (random 3 + 2) * 6 ; Blir antingen 12, 18 eller 24 
+      set studyterm (random 1 + 1) * 6
+      set waitterm 12
+      set destinationxy locUni
+      set proState "Study"
+    ]
+ 
+    if coin = 1[ ;Coffe case
+      set studycoffeterm (random 3 + 2) * 6 ; Blir antingen 12, 18 eller 24 
+      set studyterm (random 1 + 1) * 6
+      set waitterm 12      
+      set destinationxy locCafe
+      set proState "drinkingCoffe"
+    ]
+  ] 
+end 
