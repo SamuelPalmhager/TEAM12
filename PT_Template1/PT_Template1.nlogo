@@ -12,9 +12,6 @@
 ;
 ;
 
-
-
-
 ; ************ INCLUDED FILES *****************
 __includes [
     "setupenvironment.nls" ; setup-functions for setting up the environment with houses town-square, work-places, prison, police-station, restaurants, ....
@@ -67,6 +64,7 @@ globals [
   locPolStation; location of the police station
   locFactory; location of the factory
   locUni; location of the university
+  locCafe; Location of cafe
   locWork; location of the work-place
   locTownSquare; location of the town square
   locCinema; location of the entertainment-place
@@ -168,15 +166,24 @@ to update-time-flags
   ; The time is tracked in the time variable and this variable is
   ; reset every week (or every 168 hours).
 
+  ; Time ska representera 10 minuter
+  ; Varje loop ska den inkrementera med 10 minuter
+  ; När klockan slår 23 (960 dvs) ska vi sätta klockan till 6 på morgonen
+
+
 
 
   ; Set the time
-  set time (time + 1)
-  set time time mod 168
+  ;set time (time + 1)
+  ;set time time mod 168
 
+  let time-increment 1
+
+  set time (time + time-increment)
+  set time time mod 672 ;Vid 672 har det gått en vecka av 16 timmars dagar i 10-min inkrement
 
   ; Determine if it is morning, evening or weekend
-  let hour-of-day time mod 24
+  let hour-of-day (time / 6) mod 16 ;Konverterar tid till timmar
 
   ifelse (6 <= hour-of-day and hour-of-day <= 10)[
     set flagMorning true
@@ -185,17 +192,15 @@ to update-time-flags
   ]
 
 
-
   ; Check if it is evening
   ifelse (16 <= hour-of-day and hour-of-day <= 22)[
     set flagEvening true
-
   ] [
     set flagEvening false
   ]
 
   ; Check if it is weekend
-  ifelse (time >= 120) [
+  ifelse (time >= 480) [ ;Det rymms 480 10-minuter inkrement tills helgen
     set flagWeekend true
   ] [
     set flagWeekend false
@@ -226,8 +231,8 @@ GRAPHICS-WINDOW
 66
 0
 33
-0
-0
+1
+1
 1
 ticks
 30.0
@@ -290,7 +295,7 @@ num-cops
 num-cops
 0
 150
-5.0
+0.0
 1
 1
 NIL
@@ -305,7 +310,7 @@ citizen-vision
 citizen-vision
 1
 10
-1.0
+2.4
 0.1
 1
 NIL
@@ -448,7 +453,7 @@ SWITCH
 383
 Debug
 Debug
-0
+1
 1
 -1000
 
@@ -817,7 +822,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.3.0
+NetLogo 6.4.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
