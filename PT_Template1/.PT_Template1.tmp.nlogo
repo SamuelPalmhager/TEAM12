@@ -14,7 +14,6 @@
 
 
 
-
 ; ************ INCLUDED FILES *****************
 __includes [
     "setupenvironment.nls" ; setup-functions for setting up the environment with houses town-square, work-places, prison, police-station, restaurants, ....
@@ -180,7 +179,7 @@ to update-time-flags
   ;set time (time + 1)
   ;set time time mod 168
 
-  let time-increment 10
+  let time-increment 1
 
   set time (time + time-increment)
   set time time mod 672 ;Vid 672 har det gått en vecka av 16 timmars dagar i 10-min inkrement
